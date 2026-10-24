@@ -284,27 +284,146 @@ Weitere Diagramme (Ablauf von `run`, Datenfluss) stehen in [`openspec/changes/ar
 
 ## Was kommt heraus?
 
-**Langformat** (`data/staging/<quelle_id>.parquet`), eine Zeile je Zelle der Quelltabelle:
+Jeder Abruf liefert ein `FetchResult` mit vier Feldern: `long_df` (Langformat), `wide_df` (breite Tabelle), `meta` (Status und Prüfung) und `paths` (Dateien). Maßgeblich ist die Spezifikation [`openspec/specs/table-output/spec.md`](openspec/specs/table-output/spec.md); diese Seite fasst sie zusammen. Die Beispiele stammen aus echten Abrufen vom 24.10.2026 (Stand der Quellen 2026-09-21).
 
-| quelle_id | tabelle | zeit | ags5 | altx20_code | altx20_label | kreise_code | kreise_label | merkmal_code | merkmal_label | einheit | wert | sonderzeichen | qualitaet |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| bevoelkerung_kreise_alter | 12411-0017 | 2025-12-31 | 08111 | ALT000B03 | unter 3 Jahre | 08111 | Stuttgart, kreisfreie Stadt | BEVSTD | Bevölkerungsstand | Anzahl | 15099.0 | | e |
-
-- `ags5` ist ein 5-stelliger Text mit führender Null, `land` ein 2-stelliger.
-- Amtliche Sonderzeichen (`-`, `.`, `...`, `/`, `x`) lassen `wert` leer und stehen in `sonderzeichen`.
-- Kennzeichen wie `p` (vorläufig), `r`, `s` oder `e` stehen in `qualitaet`.
-- In den Parquet-Metadaten stehen Quelle, Stand, Lizenz (`dl-de/by-2-0`) und SHA-256 der Rohfassung.
-
-**Breite Tabelle je Kreis** (`data/staging/<quelle_id>_kreise.csv`), eine Zeile je Kreis und Stichtag, eine Spalte je Merkmal und Altersgruppe:
-
-```
-ags5,kreise_label,zeit,BEVSTD__ALT000B03,BEVSTD__ALT003B06,BEVSTD__ALT006B10,...
-08111,"Stuttgart, kreisfreie Stadt",2025-12-31,15099.0,15839.0,21613.0,...
+```mermaid
+flowchart LR
+    f["fetch(url)"] --> r["FetchResult"]
+    r --> long["long_df<br/>Langformat, eine Zeile je Wert"]
+    r --> wide["wide_df<br/>eine Zeile je Region und Zeit"]
+    r --> meta["meta<br/>Status, Stand, Prüfsumme, Vollständigkeit"]
+    r --> paths["paths<br/>parquet, wide_csv, raw"]
+    long --> pq[("data/staging/{id}.parquet")]
+    wide -->|nur Kreisebene| csv[("data/staging/{id}_kreise.csv")]
+    run["run()"] --> rr["RunResult"] --> tf["to_frame()<br/>eine Zeile je Quelle"]
 ```
 
-Welche Dimensionen Zeilen bleiben, steuert `--wide` (Standard: `zeit`).
+### Langformat: `long_df`
 
-**Manifest** (`runs/<UTC>/manifest_demografie.json`): je Quelle der Status (`neu`, `unveraendert`, `cache`, `fehler`), Stand, Prüfsumme, Zeilen, Pfade, die Vollständigkeit je Stichtag gegen die 400 Kreise und gegebenenfalls ein Hinweis `veraltet`.
+Eine Zeile je Zelle der Quelltabelle, abgelegt unter `data/staging/<quelle_id>.parquet`. Das Beispiel ist die erste Zeile von 12411-0017 (Kreisebene):
+
+| Spalte | Typ | Beispiel | Erklärung |
+|---|---|---|---|
+| `quelle_id` | Text | `bevoelkerung_kreise_alter` | Quell-ID aus der Konfiguration, sonst aus dem Tabellencode (`destatis_12411_0015`) |
+| `tabelle` | Text | `12411-0017` | GENESIS-Tabellencode |
+| `zeit` | Text | `2024-12-31` | Stichtag, Format `JJJJ-MM-TT` |
+| `ags5` | Text | `01001` | Kreisschlüssel, 5 Stellen mit führender Null (nur Kreisebene) |
+| `altx20_code` | Text | `ALT000B03` | Altersgruppe, Schlüssel |
+| `altx20_label` | Text | `unter 3 Jahre` | Altersgruppe, Bezeichnung |
+| `kreise_code` | Text | `01001` | Kreisschlüssel aus GENESIS, gleich `ags5` |
+| `kreise_label` | Text | `Flensburg, kreisfreie Stadt` | Name des Kreises |
+| `merkmal_code` | Text | `BEVSTD` | Merkmal, Schlüssel |
+| `merkmal_label` | Text | `Bevölkerungsstand` | Merkmal, Bezeichnung |
+| `einheit` | Text | `Anzahl` | Einheit des Werts |
+| `wert` | Zahl (`float64`) | `2388.0` | Wert in veröffentlichter Genauigkeit, ohne Rundung; leer bei Sonderzeichen |
+| `sonderzeichen` | Text | `-` | Amtliches Zeichen, das den Wert ersetzt; leer, wenn keines zutrifft |
+| `qualitaet` | Text | `e` | Kennzeichen, das den Wert begleitet; leer, wenn keines zutrifft |
+
+Eine Zeile mit Sonderzeichen: Kreis `03152`, Altersgruppe `ALT000B03`, 2024-12-31. `wert` ist leer, `sonderzeichen` ist `-`.
+
+Alle Textspalten sind im Parquet als Kategorie (Dictionary-kodierter Text) gespeichert und in pandas `category`.
+
+**Quellabhängige Spalten.** Jede Dimension einer Tabelle ergibt zwei Spalten, `<dim>_code` und `<dim>_label`, wobei `<dim>` der kleingeschriebene Dimensionscode ist. Die Spalte `zeit` kommt aus der Zeitdimension `STAG`, die Regionen bekommen eigene Namen (`ags5` bzw. `land`). Welche Dimensionen eine Tabelle hat, zeigt `list_source(url)`.
+
+| GENESIS-Dimension | Spalten | Beispiel | Vorkommen |
+|---|---|---|---|
+| `STAG` | `zeit` | `2024-12-31` | 12411-0017, 12421-0004 |
+| `KREISE` | `ags5`, `kreise_code`, `kreise_label` | `01001`, `Flensburg, kreisfreie Stadt` | 12411-0017 |
+| `ALTX20` | `altx20_code`, `altx20_label` | `ALT000B03`, `unter 3 Jahre` | 12411-0017 |
+| `DLAND` | `land`, `dland_code`, `dland_label` | `08`, `Baden-Württemberg` | 12421-0004 |
+| `GES` | `ges_code`, `ges_label` | `GESM`, `männlich` | 12421-0004 |
+| `BEVPR2` | `bevpr2_code`, `bevpr2_label` | `BEV-VARIANTE-01`, `Geburtenrate und LE moderat, WS niedrig (G2L2W1)` | 12421-0004 |
+| `ALT101` | `alt101_code`, `alt101_label` | `ALT000`, `unter 1 Jahr` | 12421-0004 |
+
+Länderebene (12421-0004) hat keine Spalte `ags5`, stattdessen `land` (2-stellig, `08` = Baden-Württemberg). Eine Beispielzeile: `zeit` 2025-12-31, `ges_code` GESM, `bevpr2_code` BEV-VARIANTE-01, `dland_label` Baden-Württemberg, `alt101_code` ALT000, `merkmal_code` BEV050, `einheit` 1000, `wert` 47.9. Die Einheit `1000` steht für Angaben in Tausend.
+
+**Zeichen.** Amtliche Zeichen laut GENESIS-Online:
+
+| Spalte | Zeichen | Bedeutung |
+|---|---|---|
+| `sonderzeichen` | `-` | nichts vorhanden, genau Null oder zur Geheimhaltung auf Null geändert |
+| `sonderzeichen` | `.` | Zahlenwert unbekannt oder geheim zu halten |
+| `sonderzeichen` | `...` | Angabe fällt später an |
+| `sonderzeichen` | `/` | keine Angabe, weil der Zahlenwert nicht sicher genug ist |
+| `sonderzeichen` | `x` | Tabellenfach gesperrt, weil die Aussage nicht sinnvoll ist |
+| `qualitaet` | `e` | endgültiger Wert |
+| `qualitaet` | `p` | vorläufige Zahl |
+| `qualitaet` | `r` | berichtigte Zahl |
+| `qualitaet` | `s` | geschätzte Zahl |
+| `qualitaet` | `()` | Aussagewert eingeschränkt, Zahlenwert statistisch relativ unsicher |
+| `qualitaet` | `0` | Zahlenwert ungleich Null, aber auf Null gerundet |
+
+Ein Zeichen in `sonderzeichen` lässt `wert` leer. Begleitende Zeichen stehen zusätzlich zum Wert in `qualitaet`.
+
+### Breite Tabelle: `wide_df` und CSV je Kreis
+
+Die breite Tabelle hat eine Zeile je Region und Kombination der Zeilen-Dimensionen (Standard: `zeit`, mit `--wide` bzw. `wide=` änderbar). Alle übrigen Dimensionen und das Merkmal bilden die Spalten, verbunden mit `__`.
+
+| Teil | Aufbau | Beispiel 12411-0017 |
+|---|---|---|
+| Zeilen | je Region und Stichtag (Standard `zeit`; weitere Dimensionen über `--wide`) | 800 Zeilen = 400 Kreise × 2 Stichtage |
+| Region | `ags5` bzw. bei Länderebene `land`, dazu `kreise_label` bzw. `dland_label` | `01001`, `Flensburg, kreisfreie Stadt` |
+| Zeit | `zeit` | `2024-12-31` |
+| Spalten | `<Merkmal>__<Dimensionswerte>`, z. B. `BEVSTD__ALT000B03`; `%TOTAL%` = Insgesamt | 21 Spalten: 3 Kennzeichnungsspalten, 18 Merkmalsspalten je Altersgruppe inkl. `%TOTAL%` |
+
+Bei **Kreisebene** wird sie zusätzlich als CSV unter `data/staging/<quelle_id>_kreise.csv` geschrieben. Ausschnitt von 12411-0017 mit 800 Zeilen und 21 Spalten:
+
+```
+ags5,kreise_label,zeit,BEVSTD__ALT000B03,BEVSTD__ALT003B06,BEVSTD__ALT006B10,...,BEVSTD__ALT075UM,BEVSTD__%TOTAL%
+01001,"Flensburg, kreisfreie Stadt",2024-12-31,2388.0,2534.0,3340.0,...
+```
+
+Die Spalte `BEVSTD__%TOTAL%` ist der Wert „Insgesamt“ über alle Altersgruppen.
+
+Bei **Länderebene** gibt es `wide_df` (736 Zeilen, 2757 Spalten bei 12421-0004), aber keine CSV. Die Spalten folgen demselben Muster, z. B. `BEV050__GESM__BEV-VARIANTE-01__ALT000`.
+
+### Rückgabeobjekt: `FetchResult`
+
+| Feld | Inhalt |
+|---|---|
+| `long_df` | Langformat, siehe oben |
+| `wide_df` | breite Tabelle, siehe oben |
+| `meta` | Schlüssel-Werte, siehe unten |
+| `paths` | Dateipfade: `parquet`, `raw`, bei Kreisebene zusätzlich `wide_csv` |
+
+**`meta`** enthält:
+
+| Schlüssel | Inhalt |
+|---|---|
+| `quelle_id`, `url`, `tabelle`, `titel` | Kennung und Herkunft der Tabelle |
+| `rolle` | `rahmen`, `kontext` oder `validierung` |
+| `status` | `neu`, `unveraendert` oder `cache` (siehe [Cache](#cache)) |
+| `stand` | Stand der Quelle, z. B. `2026-09-21T09:08:47.596Z` |
+| `sha256` | Prüfsumme der Rohfassung |
+| `zeilen` | Anzahl der Zeilen im Langformat |
+| `vollstaendigkeit` | nur Kreisebene; sonst `None`. Enthält `referenz` (400), `referenz_herkunft` (`projekt` oder `paket`), `zeitpunkte` und `abweichende_zeitpunkte` |
+| `veraltet` | nur wenn älter als `max_alter_monate`, mit `alter_monate` |
+
+Bei Kreisebene sieht `vollstaendigkeit` für 12411-0017 so aus:
+
+```python
+r.meta["vollstaendigkeit"]
+# {'referenz': 400, 'referenz_herkunft': 'projekt',
+#  'zeitpunkte': {'2024-12-31': {'anzahl': 400}, '2025-12-31': {'anzahl': 400}},
+#  'abweichende_zeitpunkte': 0}
+```
+
+Weicht ein Zeitpunkt von der Referenzliste ab, nennt er zusätzlich `fehlend` und `ueberzaehlig` mit den Schlüsseln.
+
+**`paths`** enthält `parquet` und `raw` (die unveränderte Rohfassung unter `data/raw/…`), bei Kreisebene zusätzlich `wide_csv`.
+
+**Parquet-Metadaten.** Die Datei trägt `quelle`, `quelle_id`, `tabelle`, `titel`, `stand`, `lizenz` (`dl-de/by-2-0`), `copyright`, `sha256` und `rohfassung`.
+
+### Ergebnis von `run()`
+
+`run()` liefert ein `RunResult` (Exit-Code, Manifestpfad, Einträge). `to_frame()` macht daraus eine Tabelle mit einer Zeile je Quelle und den Spalten `quelle_id`, `status`, `tabelle`, `stand`, `zeilen`, `fehler`.
+
+```python
+ergebnis = run(data_dir="nb-daten")
+ergebnis.to_frame()     # eine Zeile je Quelle
+```
+
+**Manifest** (`runs/<UTC>/manifest_demografie.json`): je Quelle der Status, Stand, Prüfsumme, Zeilen, Pfade, die Vollständigkeit je Stichtag gegen die 400 Kreise und gegebenenfalls ein Hinweis `veraltet`.
 
 ## Quellen
 
