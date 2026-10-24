@@ -1,0 +1,61 @@
+schema: spec-driven
+
+context: |
+  Language: de
+  All artifacts must be written in de.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  Zweck: `demografie-fetch` ist die erste Stufe der Datenpipeline der
+  "Immobilien-Ampel Deutschland" (Konzept, Appendix E). Aufruf mit einer URL
+  einer Datenquelle; die Komponente erkennt die Quelle, holt die Daten exakt
+  (keine Rundung, keine Schaetzung, kein Ablesen aus Grafiken), laedt nur bei
+  Aenderung neu und liefert ein Langformat (Parquet) plus eine breite Tabelle
+  je Kreis (CSV).
+
+  Quellen und Adapter: genesis (Destatis GENESIS-Online REST 2020, Token im
+  Header `username`, nur POST, form-urlencoded), genesis mit Datenbank regio
+  (Regionaldatenbank), tableau (BBSR-Dashboards), file (CSV/XLSX/ZIP) sowie
+  `import` fuer manuell geladene Dateien. Unbekannte URL: Meldung, Exit 2.
+
+  Rollenmodell je Quelle:
+  - rahmen: amtlicher Rahmen auf Bund/Laender-Ebene (z. B. 12421-0004).
+  - kontext: Merkmale auf Kreisebene, die in die Ampel eingehen.
+  - validierung: nur zum Gegenpruefen; liegt physisch getrennt unter
+    data/validation/ und wird von keinem anderen Pfad gelesen.
+
+  Stack: Python >= 3.11, Paket `demografie_fetch`, uv, requests, pandas,
+  pyarrow, openpyxl, PyYAML, Playwright (nur fuer Browser-Pfade). Pipeline:
+  DVC, Parquet, DuckDB. Tests mit pytest ohne Netzwerk (Fixtures in
+  tests/fixtures/), Live-Tests mit Marker `live`. ruff und mypy muessen sauber
+  sein. CI in GitHub Actions.
+
+  Konventionen: Konfiguration in config/sources_demografie.yaml; Rohdaten
+  unveraendert unter data/raw/<quelle_id>/<UTC-zeit>_<sha8>/ (nie
+  ueberschreiben); Kreisschluessel `ags5` als 5-stelliger Text, Land 2-stellig;
+  Sonderzeichen in Spalte `sonderzeichen`, Qualitaetskennzeichen in
+  `qualitaet`. Tokens nur aus Umgebungsvariablen (GENESIS_TOKEN, REGIO_TOKEN),
+  nie im Code oder Log. Server hoeflich behandeln: sequentiell, max. 1
+  Anfrage/s, Backoff. Keine Umgehung von Sperren, Logins, CAPTCHAs oder
+  Zustimmungsdialogen. Exit-Codes: 0 ok/unveraendert, 1 Teilfehler, 2 Abbruch.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
