@@ -35,7 +35,7 @@
 - [x] 6.1 `ruff check` und `mypy --strict` über `src`, `tests`, `probe` sauber
 - [x] 6.2 Workflows `ci.yml` (Lint und Tests bei Push) und `monthly.yml` (cron, `demografie-fetch run --max-age 0`, Manifest als Artefakt); `monthly` einmal per `workflow_dispatch` aus CI erfolgreich
 - [x] 6.3 CHANGELOG
-- [ ] 6.4 README als Überblick neu gliedern: Zweck in drei Sätzen; Schnellstart (Installation, erster Abruf mit Beispielausgabe); „Wie verwende ich die Komponente?“ für drei Wege (CLI, Python/Notebook, `run` mit Konfiguration und DVC); Bausteindiagramm und Sequenzdiagramm `fetch` mit Cache aus design.md; Beispiel einer Zeile im Langformat und einer CSV-Zeile; neue Quelle eintragen (Konfiguration); Quellenstatus-Tabelle (unterstützt, geplant, gesperrt); Details (Optionen, Ablage, Exit-Codes) erst danach. Prüfung: Diagramme werden auf GitHub angezeigt, alle Befehle im Schnellstart laufen lokal
+- [x] 6.4 README als Überblick neu gliedern: Zweck in drei Sätzen; Schnellstart (Installation, erster Abruf mit Beispielausgabe); „Wie verwende ich die Komponente?“ für drei Wege (CLI, Python/Notebook, `run` mit Konfiguration und DVC); Bausteindiagramm und Sequenzdiagramm `fetch` mit Cache aus design.md; Beispiel einer Zeile im Langformat und einer CSV-Zeile; neue Quelle eintragen (Konfiguration); Quellenstatus-Tabelle (unterstützt, geplant, gesperrt); Details (Optionen, Ablage, Exit-Codes) erst danach. Prüfung: Diagramme werden auf GitHub angezeigt, alle Befehle im Schnellstart laufen lokal
 
 ## Workflow follow-up
 
