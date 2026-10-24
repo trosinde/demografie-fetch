@@ -3,6 +3,7 @@
 **URL rein, Tabelle je Kreis raus.** `demografie-fetch` holt amtliche Demografiedaten für die Immobilien-Ampel Deutschland. Du gibst die URL einer Tabelle an. Die Komponente erkennt die Quelle, übernimmt die Werte exakt (ohne Rundung oder Schätzung) und schreibt ein Langformat (Parquet) für die Pipeline und eine breite Tabelle je Kreis (CSV). Ein Cache sorgt dafür, dass nur geladen wird, was sich an der Quelle geändert hat.
 
 - [Schnellstart](#schnellstart)
+- [Im Jupyter-Notebook](#im-jupyter-notebook)
 - [Wie verwende ich die Komponente?](#wie-verwende-ich-die-komponente)
 - [So funktioniert es](#so-funktioniert-es)
 - [Was kommt heraus?](#was-kommt-heraus)
@@ -32,6 +33,98 @@ Manifest: runs/20261024T132854Z/manifest_demografie.json
 Derselbe Aufruf gleich danach lädt nichts, sondern meldet `cache`. Nach Ablauf des Prüfintervalls kommt `unveraendert`, solange Destatis die Tabelle nicht geändert hat.
 
 Die Quell-ID `bevoelkerung_kreise_alter` stammt aus `config/sources_demografie.yaml`, weil die URL dort eingetragen ist. Für andere URLs bildet die Komponente eine ID aus dem Tabellencode, z. B. `destatis_12411_0015`.
+
+## Im Jupyter-Notebook
+
+Lokal in JupyterLab oder VS Code, Kernel mit **Python 3.11 oder neuer**. Eine fertige Vorlage ist [`notebooks/schnellstart.ipynb`](notebooks/schnellstart.ipynb); CI führt sie bei jeder Änderung vollständig aus.
+
+**Installation** (erste Zelle):
+
+```python
+%pip install -q "git+https://github.com/trosinde/demografie-fetch.git@v0.2.0"
+```
+
+- `%pip` statt `!pip`, damit in die Umgebung des laufenden Kernels installiert wird. Ein Neustart ist danach nicht nötig.
+- Der Tag (`@v0.2.0`) legt die Version fest. Ohne Tag wird der aktuelle Stand von `main` installiert.
+- Ein Klon des Repos ist nicht nötig: Referenzliste der Kreise und Beispielkonfiguration sind im Paket enthalten.
+
+**Ausführung:**
+
+```python
+from demografie_fetch import fetch, list_source, run
+
+URL = "https://genesis.destatis.de/datenbank/online/statistic/12411/table/12411-0015"
+print(list_source(URL))                         # Struktur ansehen, lädt keine Daten
+
+r = fetch(URL, startyear=2024, data_dir="nb-daten")
+r                                               # Zusammenfassung als Tabelle
+r.wide_df.head()                                # je Kreis und Stichtag eine Zeile
+r.long_df                                       # Langformat
+r.meta["vollstaendigkeit"]                      # 400 Kreise je Stichtag?
+
+fetch(URL, startyear=2024, data_dir="nb-daten").meta["status"]   # 'cache'
+
+ergebnis = run(data_dir="nb-daten")             # alle aktiven Quellen der Beispielkonfiguration
+ergebnis.to_frame()                             # eine Zeile je Quelle
+```
+
+| Thema | Hinweis |
+|---|---|
+| Ablage | `data_dir` (Standard: Ordner des Notebooks) erhält `data/` und `runs/`. Ein eigener Ordner wie `nb-daten` hält das Notebook-Verzeichnis sauber. |
+| Eigene Konfiguration | `run(config="pfad/quellen.yaml")` oder `config/sources_demografie.yaml` im Notebook-Ordner; sonst gilt die mitgelieferte. Das Manifest nennt, welche benutzt wurde. |
+| Meldungen | `import logging; logging.basicConfig(level=logging.INFO)` zeigt je Quelle `neu`, `unveraendert` oder `cache`. |
+| Fehler | Ausnahmen mit verständlicher Meldung, z. B. `InputError` mit der Tabellenliste bei einer Statistik-URL. |
+| Speicher | 12421-0004 (alle Länder, Varianten, Altersjahre) hat 2 Mio. Zeilen und braucht rund 100 MB im Speicher; mit `select`/`startyear` lässt sich das verkleinern. |
+
+```mermaid
+flowchart LR
+    subgraph nb["Jupyter-Notebook (lokal)"]
+        cell1["%pip install git+…@v0.2.0"]
+        cell2["from demografie_fetch import fetch, run"]
+    end
+    gh[("GitHub-Repo, öffentlich<br/>Tag v0.2.0")]
+    subgraph pkg["installiertes Paket demografie_fetch"]
+        api["fetch · run · list_source"]
+        res["data/<br/>referenz_kreise.csv<br/>sources_demografie.yaml"]
+        lookup["Ressourcen-Suche<br/>Projekt vor Paket"]
+    end
+    proj[("Notebook-Ordner<br/>config/ (optional)<br/>data/ · runs/")]
+    destatis[("GENESIS-Online")]
+
+    cell1 --> gh --> pkg
+    cell2 --> api
+    api --> lookup
+    lookup --> proj
+    lookup --> res
+    api --> destatis
+    api --> proj
+```
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor N as Nutzer
+    participant K as Jupyter-Kernel
+    participant G as GitHub
+    participant P as demografie_fetch
+    participant D as Destatis
+
+    N->>K: %pip install "git+https://github.com/trosinde/demografie-fetch.git@v0.2.0"
+    K->>G: Quellstand zum Tag holen (ohne Zugangsdaten)
+    alt Python < 3.11
+        K-->>N: Abbruch: requires-python >= 3.11
+    else
+        K->>K: Paket bauen und installieren (inkl. data/)
+        K-->>N: installiert, kein Neustart nötig
+    end
+    N->>P: r = fetch(url, startyear=2024)
+    P->>P: Referenzliste suchen: ./config, sonst Paket
+    P->>D: structure, data (siehe Cache-Ablauf)
+    P-->>N: FetchResult als HTML-Zusammenfassung
+    N->>P: r.wide_df, r.long_df
+    N->>P: fetch(url, startyear=2024)
+    P-->>N: status cache, keine Anfrage
+```
 
 ## Wie verwende ich die Komponente?
 
@@ -64,6 +157,8 @@ r.long_df          # Langformat, 17.172 Zeilen x 14 Spalten
 r.wide_df          # je Kreis und Stichtag eine Zeile: 800 x 21
 r.paths            # {"parquet": ..., "wide_csv": ..., "raw": ...}
 ```
+
+Mehr dazu, auch zur Installation im Notebook: [Im Jupyter-Notebook](#im-jupyter-notebook).
 
 Wiederholte Aufrufe im Notebook kommen innerhalb von 6 Stunden ohne Netzwerkzugriff aus dem Cache. Fehler werden als Ausnahmen gemeldet (`InputError`, `UnsupportedSourceError`, `BlockedError`, `FormatError`), jede mit `exit_code`.
 
@@ -185,7 +280,7 @@ sequenceDiagram
     end
 ```
 
-Weitere Diagramme (Ablauf von `run`, Datenfluss) stehen in [`openspec/changes/add-genesis-adapter/design.md`](openspec/changes/add-genesis-adapter/design.md), die Zugangsprüfung in [`openspec/changes/add-access-probe/design.md`](openspec/changes/add-access-probe/design.md).
+Weitere Diagramme (Ablauf von `run`, Datenfluss) stehen in [`openspec/changes/archive/2026-10-24-add-genesis-adapter/design.md`](openspec/changes/archive/2026-10-24-add-genesis-adapter/design.md), die Zugangsprüfung in [`openspec/changes/archive/2026-10-24-add-access-probe/design.md`](openspec/changes/archive/2026-10-24-add-access-probe/design.md).
 
 ## Was kommt heraus?
 
@@ -297,7 +392,7 @@ runs/<UTC>/manifest_demografie.json     Ergebnis je Lauf
 
 ### Entwicklung
 
-Änderungen laufen über [OpenSpec](https://github.com/Fission-AI/OpenSpec): Vorschlag (`/opsx:propose`), Freigabe, Umsetzung (`/opsx:apply`), PR, Archiv. Offene Changes liegen unter `openspec/changes/`.
+Änderungen laufen über [OpenSpec](https://github.com/Fission-AI/OpenSpec): Vorschlag (`/opsx:propose`), Freigabe, Umsetzung (`/opsx:apply`), PR, Archiv. Die gültige Spezifikation steht in [`openspec/specs/`](openspec/specs/), offene Changes unter `openspec/changes/`, abgeschlossene mit Design und Diagrammen unter `openspec/changes/archive/`.
 
 ```bash
 uv run pytest              # ohne Netzwerk

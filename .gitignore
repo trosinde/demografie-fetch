@@ -6,6 +6,8 @@ __pycache__/
 .ruff_cache/
 dist/
 .env
-data/
-runs/
+/data/
+/runs/
 probe/out/
+notebooks/nb-daten/
+.ipynb_checkpoints/

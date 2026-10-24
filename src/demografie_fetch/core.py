@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
+import html
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 import pandas as pd
 
 from . import cache, output, store
 from .adapters.genesis import LIZENZ, GenesisClient, TableInfo, apply_selection, cube_to_long
-from .config import Source, find_source, load_sources
+from .config import Source, find_source, load_sources, resolve_config
 from .detect import SourceRef, detect
 from .errors import FetchError, InputError
 from .http import PoliteSession
@@ -26,6 +27,55 @@ class FetchResult:
     wide_df: pd.DataFrame | None
     meta: dict[str, Any]
     paths: dict[str, str] = field(default_factory=dict)
+
+    def summary(self) -> dict[str, str]:
+        """Kurze Zusammenfassung ohne Datenzeilen (fuer Notebook und repr)."""
+        m = self.meta
+        voll = m.get("vollstaendigkeit") or {}
+        if "zeitpunkte" in voll:
+            voll_text = (f"{voll['referenz']} Kreise, {len(voll['zeitpunkte'])} Zeitpunkte, "
+                         f"{voll['abweichende_zeitpunkte']} mit Abweichung")
+        else:
+            voll_text = str(voll.get("fehler", "keine Kreisebene"))
+        wide = "-" if self.wide_df is None else f"{len(self.wide_df)} x {self.wide_df.shape[1]}"
+        out = {
+            "Quelle": str(m.get("quelle_id")),
+            "Status": str(m.get("status")),
+            "Tabelle": f"{m.get('tabelle')} {m.get('titel') or ''}".strip(),
+            "Stand": str(m.get("stand")),
+            "Langformat": f"{len(self.long_df)} Zeilen x {self.long_df.shape[1]} Spalten",
+            "Breitformat": wide,
+            "Vollständigkeit": voll_text,
+        }
+        if m.get("veraltet"):
+            out["Hinweis"] = f"veraltet ({m['veraltet']['alter_monate']} Monate)"
+        out.update({f"Pfad {k}": v for k, v in self.paths.items()})
+        return out
+
+    def __repr__(self) -> str:
+        rows = self.summary()
+        width = max(len(k) for k in rows)
+        return "FetchResult\n" + "\n".join(f"  {k:<{width}}  {v}" for k, v in rows.items())
+
+    def _repr_html_(self) -> str:
+        rows = "".join(
+            f"<tr><th style='text-align:left'>{html.escape(k)}</th>"
+            f"<td style='text-align:left'>{html.escape(v)}</td></tr>"
+            for k, v in self.summary().items()
+        )
+        return f"<table><caption>FetchResult</caption>{rows}</table>"
+
+
+class RunResult(NamedTuple):
+    """Ergebnis von run(); laesst sich wie (exit_code, manifest_path, entries) entpacken."""
+
+    exit_code: int
+    manifest_path: Path
+    entries: list[dict[str, Any]]
+
+    def to_frame(self) -> pd.DataFrame:
+        cols = ["quelle_id", "status", "tabelle", "stand", "zeilen", "fehler"]
+        return pd.DataFrame([{c: e.get(c) for c in cols} for e in self.entries], columns=cols)
 
 
 @dataclass
@@ -282,18 +332,21 @@ def exit_code(entries: list[dict[str, Any]]) -> int:
 
 
 def write_manifest(st: store.Store, entries: list[dict[str, Any]],
-                   now: datetime | None = None) -> Path:
+                   now: datetime | None = None, konfiguration: str | None = None) -> Path:
     now = now or cache.utcnow()
     path = st.runs_dir(now.strftime("%Y%m%dT%H%M%SZ")) / "manifest_demografie.json"
-    store.write_json(path, {"zeit_utc": cache.iso(now), "exit_code": exit_code(entries),
-                            "quellen": entries})
+    body: dict[str, Any] = {"zeit_utc": cache.iso(now), "exit_code": exit_code(entries)}
+    if konfiguration:
+        body["konfiguration"] = konfiguration
+    body["quellen"] = entries
+    store.write_json(path, body)
     return path
 
 
 def run(only: list[str] | None = None, force: bool = False, max_age: float | None = None,
         data_dir: str | Path | None = None, config: str | Path | None = None,
         http: PoliteSession | None = None,
-        now: datetime | None = None) -> tuple[int, Path, list[dict[str, Any]]]:
+        now: datetime | None = None) -> RunResult:
     """Alle aktiven (bzw. per `only` gewaehlten) Quellen; Fehler je Quelle isoliert."""
     sources = load_sources(Path(config) if config else None)
     chosen = [s for s in sources if (s.id in only if only else s.aktiv)]
@@ -316,8 +369,9 @@ def run(only: list[str] | None = None, force: bool = False, max_age: float | Non
         except Exception as e:  # unerwartet: Quelle scheitert, Lauf geht weiter
             log.exception("%s: unerwarteter Fehler", s.id)
             entries.append(manifest_entry(None, s.id, s.url, e))
-    path = write_manifest(store.Store(data_dir), entries, now)
-    return exit_code(entries), path, entries
+    herkunft = resolve_config(Path(config) if config else None)[1]
+    path = write_manifest(store.Store(data_dir), entries, now, konfiguration=herkunft)
+    return RunResult(exit_code(entries), path, entries)
 
 
 def check(http: PoliteSession | None = None) -> dict[str, str]:

@@ -3,12 +3,28 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from importlib.resources import files
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 DEFAULT_CONFIG = Path("config/sources_demografie.yaml")
+
+
+def package_file(name: str) -> Traversable:
+    """Im Paket mitgelieferte Datei unter demografie_fetch/data/."""
+    return files("demografie_fetch") / "data" / name
+
+
+def resolve_config(path: Path | None = None) -> tuple[Path | Traversable, str]:
+    """Konfiguration: Parameter, sonst ./config/, sonst Paket. Liefert (Datei, Herkunft)."""
+    if path is not None:
+        return path, str(path)
+    if DEFAULT_CONFIG.exists():
+        return DEFAULT_CONFIG, "projekt"
+    return package_file("sources_demografie.yaml"), "paket"
 
 
 @dataclass
@@ -27,10 +43,10 @@ class Source:
 
 
 def load_sources(path: Path | None = None) -> list[Source]:
-    path = path or DEFAULT_CONFIG
-    if not path.exists():
+    source, _ = resolve_config(path)
+    if not source.is_file():
         return []
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    data = yaml.safe_load(source.read_text(encoding="utf-8")) or {}
     out = []
     for s in data.get("sources") or []:
         wide = s.get("wide")

@@ -495,11 +495,13 @@ def load_sources(path: Path) -> list[dict[str, Any]]:
     return list(data.get("sources") or [])
 
 
-def public_ip_info() -> dict[str, Any]:
+def public_ip_info(env: str) -> dict[str, Any]:
+    """Netz der Laufumgebung ohne IP; Region und Anbieter nur fuer CI (kein Privatanschluss)."""
     try:
         r = requests.get("https://ipinfo.io/json", timeout=10)
         d = r.json()
-        return {k: d.get(k) for k in ("country", "region", "org")}  # keine IP
+        keys = ("country", "region", "org") if env == "ci" else ("country",)
+        return {k: d.get(k) for k in keys}
     except Exception:
         return {}
 
@@ -521,7 +523,7 @@ def run(env: str, config: Path, out: Path, only: list[str] | None = None) -> dic
         "plattform": platform.platform(),
         "python": platform.python_version(),
         "runner": os.environ.get("RUNNER_NAME") or None,
-        "netz": public_ip_info(),
+        "netz": public_ip_info(env),
         "tokens": {db: bool(t) for db, t in prober.tokens.items()},
         "quellen": [
             {**{k: v for k, v in asdict(r).items() if k != "tests"},

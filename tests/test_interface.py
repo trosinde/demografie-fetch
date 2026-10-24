@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from demografie_fetch import cli, core, fetch
+import demografie_fetch.cli as cli
+from demografie_fetch import core, fetch
 from demografie_fetch.errors import InputError
 from tests.conftest import BASE, URL_0017, routes_0017
 
