@@ -2,7 +2,7 @@
 
 ## 1. Grundlagen
 
-- [ ] 1.1 Abhängigkeiten (`requests`, `pandas`, `pyarrow`, `PyYAML`) und Entry-Point `demografie-fetch` in `pyproject.toml`; `uv sync` und `uv run demografie-fetch --help` laufen
+- [x] 1.1 Abhängigkeiten (`requests`, `pandas`, `pyarrow`, `PyYAML`) und Entry-Point `demografie-fetch` in `pyproject.toml`; `uv sync` und `uv run demografie-fetch --help` laufen
 - [ ] 1.2 `detect`: URL → Adapter/Datenbank/Tabelle/Statistik inkl. Abweisung von Regionaldatenbank, Tableau, BBSR-Einbettung, Dateien und unbekannten URLs; Quell-ID aus Konfiguration oder Code; Positiv- und Negativtests je Muster grün
 - [ ] 1.3 `http`: höfliche Session (Kennung, ≥1 s Abstand, Backoff bei 429/5xx/Netzwerk, keine Wiederholung bei 401/403); Tests mit gemocktem Transport grün
 
@@ -15,7 +15,7 @@
 
 ## 3. Cache und Ablage
 
-- [ ] 3.1 `store`: Pfade je Rolle (nur hier `data/validation`), atomares Schreiben von Parquet (mit Metadaten), CSV, JSON
+- [x] 3.1 `store`: Pfade je Rolle (nur hier `data/validation`), atomares Schreiben von Parquet (mit Metadaten), CSV, JSON
 - [ ] 3.2 `cache`: Zustand `_state.json`, Prüfintervall, `lastChange`-Vergleich, Prüfsumme, versionierte Rohfassung, Neuaufbau aus Rohfassung bei geänderter Auswahl oder fehlendem Parquet, `--force`; Pflichttests 1–4 (erster Lauf, zweiter Lauf unverändert, gleiche Prüfsumme nicht doppelt, neuer Inhalt neue Fassung) plus Prüfintervall und Auswahlwechsel grün
 
 ## 4. Ausgabe
