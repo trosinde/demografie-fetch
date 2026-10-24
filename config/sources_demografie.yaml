@@ -1,29 +1,35 @@
 # Quellen fuer demografie-fetch. Eintraege mit aktiv: false werden erst aktiv,
-# wenn die URL bestaetigt ist.
+# wenn die URL bestaetigt ist. zugang: Zugangsklasse laut docs/zugangsbericht.md.
 sources:
   - id: kbv16_laender
     url: https://genesis.destatis.de/datenbank/online/statistic/12421/table/12421-0004
     rolle: rahmen
+    zugang: A-cloud       # Destatis-Webschnittstelle ohne Token
     aktiv: true
   - id: bevoelkerung_kreise_alter
-    url: https://www.regionalstatistik.de/genesis/online?sequenz=tabelleErgebnis&selectionname=12411-03-03-4
+    # Ersatz fuer Regionaldatenbank 12411-03-03-4: gleiche Statistik bei Destatis, Kreisebene
+    url: https://genesis.destatis.de/datenbank/online/statistic/12411/table/12411-0017
     auswahl: {startyear: "2012"}
     rolle: kontext
-    aktiv: false          # Tabellencode ueber Katalog bestaetigen (stammt aus 2019)
+    zugang: A-cloud
+    aktiv: true
   - id: bewegungen_kreise
     url: https://www.regionalstatistik.de/link/statistikInfo/12711
     rolle: kontext
+    zugang: B-manuell     # nur Regionaldatenbank (Token noetig, robots.txt Disallow) -> import
     aktiv: false
   - id: bbsr_rop2045
     url: ""               # Tableau-URL des ROP-2045-Dashboards eintragen
     adapter: tableau
     all_filters: true
     rolle: kontext
+    zugang: offen         # aus CI gesperrt (403); lokal erst mit URL pruefbar
     max_alter_monate: 48
     aktiv: false
   - id: laenderprognose_bayern
     url: ""               # direkter Download-Link Landesamt
     adapter: file
     rolle: validierung
+    zugang: offen
     max_alter_monate: 48
     aktiv: false
