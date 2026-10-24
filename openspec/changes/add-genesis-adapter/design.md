@@ -14,6 +14,124 @@ Siehe proposal.md und docs/zugangsbericht.md (Nachtrag). Die Web-Oberfläche `ge
 
 Es gibt kein ETag und kein Last-Modified (`Cache-Control: no-store`). Die Änderungserkennung muss deshalb über `lastChange` und eine Prüfsumme laufen.
 
+## Architektur und Abläufe
+
+### Bausteine
+
+```mermaid
+flowchart LR
+    user(["Nutzer / DVC / Notebook"])
+    subgraph pkg[demografie_fetch]
+        cli["cli<br/>demografie-fetch"]
+        api["core.fetch / core.run"]
+        detect["detect<br/>URL → Quelle"]
+        config["config<br/>sources_demografie.yaml"]
+        cache["cache<br/>_state.json, Prüflogik"]
+        genesis["adapters/genesis<br/>Würfel → Langformat"]
+        http["http<br/>≥1 s, Backoff"]
+        output["output<br/>Breitformat, Vollständigkeit"]
+        store["store<br/>Ablage, Rollentrennung"]
+    end
+    destatis[("GENESIS-Online<br/>Destatis")]
+    files[("data/raw · data/staging<br/>data/validation · runs/")]
+
+    user --> cli --> api
+    user -->|Python| api
+    api --> detect
+    api --> config
+    api --> cache
+    api --> genesis --> http --> destatis
+    api --> output
+    cache --> store
+    output --> store
+    api --> store --> files
+```
+
+### Ablauf `fetch(url)` mit Cache
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor N as Nutzer
+    participant F as fetch()
+    participant D as detect
+    participant C as Cache (_state.json)
+    participant G as Destatis-Schnittstelle
+    participant S as Ablage
+
+    N->>F: fetch(url, Optionen)
+    F->>D: Quelle erkennen
+    alt nicht Destatis oder unbekannt
+        D-->>N: Fehler, Exit 2 (mit Hinweis)
+    else nur Statistik, kein --table
+        F->>G: GET statistics/{code}/tables
+        F-->>N: Tabellenliste, Exit 2
+    end
+    F->>C: Zustand lesen
+    alt Stufe 1: geprüft innerhalb max_age, Auswahl gleich, Parquet da
+        F->>S: Parquet lesen
+        F-->>N: status = cache (keine Anfrage)
+    else
+        F->>G: GET tables/{code}/structure
+        alt Stufe 2: lastChange unverändert
+            opt Auswahl geändert oder Parquet fehlt
+                F->>S: Tabellen aus letzter Rohfassung neu bauen
+            end
+            F->>C: checked_at aktualisieren
+            F-->>N: status = unveraendert
+        else Stand neu oder --force
+            F->>G: GET tables/{code}/data, qualitySigns
+            F->>F: SHA-256 der Rohdaten
+            alt Stufe 3: Prüfsumme gleich
+                F->>C: Stand aktualisieren (keine neue Rohfassung)
+                F-->>N: status = unveraendert
+            else Inhalt neu
+                F->>F: Format prüfen (Zellen = Produkt der Dimensionen)
+                F->>S: data/raw/{id}/{UTC}_{sha8}/ anlegen
+                F->>S: Parquet + CSV atomar ersetzen
+                F->>C: Zustand speichern
+                F-->>N: status = neu
+            end
+        end
+    end
+```
+
+### Ablauf `demografie-fetch run`
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant R as run()
+    participant K as Konfiguration
+    participant F as fetch()
+    participant M as Manifest
+
+    R->>K: aktive Quellen (oder --only)
+    loop je Quelle, nacheinander
+        R->>F: fetch(url, quelle_id)
+        alt Erfolg
+            F-->>R: neu | unveraendert | cache
+        else Fehler (gesperrt, Format, nicht unterstützt)
+            F-->>R: Fehler, Lauf geht weiter
+        end
+    end
+    R->>M: runs/{UTC}/manifest_demografie.json
+    R-->>R: Exit 0 (alle ok) · 1 (Teilfehler) · 2 (alle fehlgeschlagen)
+```
+
+### Datenfluss
+
+```mermaid
+flowchart LR
+    raw["data.json<br/>Datenwürfel"] --> long["Langformat<br/>eine Zeile je Zelle"]
+    struct["structure.json<br/>Labels, Einheit, Stand"] --> long
+    signs["qualitySigns.json"] --> long
+    long -->|"Auswahl: startyear, select"| sel[Auswahl]
+    sel --> pq[("staging/{id}.parquet<br/>oder validation/")]
+    sel -->|"Kreisebene, wide"| csv[("staging/{id}_kreise.csv")]
+    sel --> voll["Vollständigkeit<br/>gegen 400 Kreise"] --> man[("Manifest")]
+```
+
 ## Goals / Non-Goals
 
 **Goals:**
