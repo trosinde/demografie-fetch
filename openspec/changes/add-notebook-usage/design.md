@@ -118,17 +118,9 @@ sequenceDiagram
 - **`RunResult` als `NamedTuple`** mit zusätzlicher Methode `to_frame()`. Bestehender Code mit `code, path, entries = run(...)` funktioniert weiter.
 - **`FetchResult._repr_html_`** und `__repr__` geben eine kompakte Tabelle aus. Die Datenrahmen bleiben über `long_df` und `wide_df` erreichbar.
 - **CI-Workflow `notebook.yml`** für Pull Requests und Pushes auf `main`, die `src/`, `notebooks/` oder `pyproject.toml` ändern. Er baut das Wheel, installiert es mit `ipykernel` und `nbclient` in eine frische venv und führt das Notebook aus. Die Installationszelle trägt den Tag `skip-ci`; `scripts/run_notebook.py` entfernt solche Zellen vor der Ausführung mit `nbclient`. Sie wird übersprungen, weil das Wheel des aktuellen Stands getestet werden soll und nicht der letzte Tag. Abgerufen wird nur eine kleine Tabelle (12411-0015 ab 2024, rund 200 kB).
-- **Veröffentlichung des Repos (Entscheidungspunkt).** Die Prüfung vom 24.10.2026 ergab:
-  - Die Commit-Historie nennt die private Mailadresse als Autor.
-  - `docs/zugangsbericht.md` und `probe/report_local.json` nennen Anbieter und Region des Privatanschlusses.
-  - Keine Tokens, keine lokalen Pfade, keine IP-Adressen.
-
-  Optionen:
-  - (a) so veröffentlichen.
-  - (b) Anbieter und Region in beiden Dateien auf „Privatanschluss, DE“ kürzen. Die Historie enthält sie weiterhin.
-  - (c) wie (b), dazu die Historie vor der Veröffentlichung neu schreiben, sodass Anbieter, Region und Mailadresse auch in alten Commits fehlen (Force-Push auf `main`, alte PR-Verweise zeigen dann auf andere Commits).
-
-  Empfehlung: (b), und für künftige Commits die GitHub-noreply-Adresse verwenden. Die Mailadresse ist in Commits üblich; Anbieter und Region sind für den Bericht unwichtig. Die Sichtbarkeit wird erst nach der Freigabe in Aufgabe 4.2 umgestellt.
+- **Veröffentlichung des Repos (Entscheidungspunkt).** Die Prüfung vom 24.10.2026 ergab: Die Commit-Historie nennt die private Mailadresse des Autors; `docs/zugangsbericht.md` und `probe/report_local.json` nannten Anbieter und Region des Privatanschlusses. Keine Tokens, keine lokalen Pfade, keine IP-Adressen. Optionen: (a) so veröffentlichen; (b) die Angaben in beiden Dateien auf „Privatanschluss, DE“ kürzen (die Historie enthält sie weiterhin); (c) zusätzlich die Historie neu schreiben. Der Nutzer hat (c) gewählt.
+- **Umsetzung von (c).** GitHub hält für jeden Pull Request eine schreibgeschützte Referenz `refs/pull/<n>/head` auf die damaligen Commits; sie lässt sich nicht löschen. Eine umgeschriebene Historie per Force-Push im bestehenden Repo würde die alten Commits deshalb nach dem Öffentlichstellen weiter zugänglich lassen. (c) wird daher so umgesetzt, wie in Aufgabe 4.2 vom Nutzer entschieden (siehe dort).
+- **Prüfskript erfasst künftig weniger.** `probe/access_probe.py` speichert für lokale Läufe nur noch das Land, Region und Anbieter nur noch für CI-Läufe.
 
 ## Risks / Trade-offs
 
