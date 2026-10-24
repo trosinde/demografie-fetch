@@ -19,7 +19,7 @@
 
 - [x] 4.1 Entscheidung des Nutzers zu Option (a), (b) oder (c) aus design.md einholen und umsetzen; Prüfung erneut ausführen und Ergebnis zeigen
 - [x] 4.2 Nach ausdrücklicher Freigabe: Repo öffentlich stellen (`gh repo edit --visibility public`); Installation per `%pip install git+https://…@<commit>` ohne Zugangsdaten in einem frischen lokalen Kernel geprüft
-- [ ] 4.3 Version 0.2.0, CHANGELOG; nach dem Merge Tag `v0.2.0` und Installation mit dem Tag in frischem Kernel geprüft
+- [x] 4.3 Version 0.2.0, CHANGELOG; nach dem Merge Tag `v0.2.0` und Installation mit dem Tag in frischem Kernel geprüft
 
 ## 5. Doku
 

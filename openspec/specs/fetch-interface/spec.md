@@ -24,7 +24,7 @@ Das System SHALL mit `--list` nur die Struktur anzeigen: bei einer Statistik die
 - **THEN** zeigt die Ausgabe die Dimensionen `KREISE`, `STAG`, `ALTX20` und das Merkmal `BEVSTD`, ohne Dateien zu schreiben
 
 ### Requirement: Lauf über die Konfiguration
-Das System SHALL mit `demografie-fetch run` alle Quellen mit `aktiv: true` aus `config/sources_demografie.yaml` nacheinander abrufen; `--only ID[,ID]` beschränkt den Lauf, `--force` erzwingt den Abruf. Eine fehlgeschlagene Quelle SHALL den Lauf nicht abbrechen.
+Das System SHALL mit `demografie-fetch run` bzw. `run()` alle Quellen mit `aktiv: true` aus der Konfiguration nacheinander abrufen; `--only ID[,ID]` beschränkt den Lauf, `--force` erzwingt den Abruf. Konfiguration ist die angegebene Datei, sonst `config/sources_demografie.yaml` im Arbeitsverzeichnis, sonst die im Paket mitgelieferte Beispielkonfiguration; welche genutzt wurde, steht im Manifest. Eine fehlgeschlagene Quelle SHALL den Lauf nicht abbrechen.
 
 #### Scenario: Eine Quelle schlägt fehl
 - **WHEN** von zwei aktiven Quellen eine mit Fehler endet
@@ -33,6 +33,10 @@ Das System SHALL mit `demografie-fetch run` alle Quellen mit `aktiv: true` aus `
 #### Scenario: Nicht unterstützte aktive Quelle
 - **WHEN** eine aktive Quelle auf die Regionaldatenbank zeigt
 - **THEN** steht sie mit Status `fehler` und Begründung im Manifest, der Lauf geht weiter
+
+#### Scenario: Notebook ohne Konfiguration
+- **WHEN** `run()` in einem Ordner ohne `config/` aufgerufen wird
+- **THEN** werden die aktiven Quellen der mitgelieferten Beispielkonfiguration abgerufen, und das Manifest nennt `konfiguration: paket`
 
 ### Requirement: Manifest
 Das System SHALL je Lauf `runs/<UTC-zeit>/manifest_demografie.json` schreiben mit: je Quelle `id`, `url`, `tabelle`, `status` (`neu`, `unveraendert`, `cache`, `fehler`), Stand, Prüfsumme, Zeilenzahl, Pfade, Vollständigkeitsbefund, Fehlermeldung und Hinweis auf veraltete Daten.
@@ -56,11 +60,15 @@ Das System SHALL mit 0 enden, wenn alle Quellen neu, unverändert oder aus dem C
 - **THEN** ist der Exit-Code 2
 
 ### Requirement: Python-API
-Das System SHALL `fetch(url, **opts) -> FetchResult` bereitstellen, mit denselben Optionen wie die CLI. `FetchResult` SHALL `long_df`, `wide_df` (oder `None` ohne Kreis- bzw. Landesebene), `meta` (Status, Stand, Prüfsumme, Tabelle, Titel, Vollständigkeit) und `paths` enthalten. Fehler SHALL als Ausnahmen mit Exit-Code-Bezug gemeldet werden.
+Das System SHALL `fetch(url, **opts) -> FetchResult`, `run(**opts) -> RunResult` und `list_source(url, table=None) -> str` bereitstellen, mit denselben Optionen wie die CLI. `FetchResult` SHALL `long_df`, `wide_df` (oder `None` ohne Kreis- bzw. Landesebene), `meta` (Status, Stand, Prüfsumme, Tabelle, Titel, Vollständigkeit) und `paths` enthalten. `RunResult` SHALL `exit_code`, `manifest_path`, `entries` und `to_frame()` enthalten und sich wie bisher als Tupel `(exit_code, manifest_path, entries)` entpacken lassen. Fehler SHALL als Ausnahmen mit Exit-Code-Bezug gemeldet werden.
 
 #### Scenario: Wiederholter Aufruf im Notebook
 - **WHEN** `fetch(url)` zweimal hintereinander aufgerufen wird
 - **THEN** liefert der zweite Aufruf dieselben Daten aus dem Cache mit `meta["status"] == "cache"`
+
+#### Scenario: Lauf als Tabelle
+- **WHEN** `run().to_frame()` aufgerufen wird
+- **THEN** entsteht ein DataFrame mit den Spalten `quelle_id`, `status`, `tabelle`, `stand`, `zeilen`, `fehler`
 
 ### Requirement: Datenverzeichnis
 Das System SHALL Ablage, Staging, Validierung und Läufe relativ zu einem Basisverzeichnis anlegen, das über `--data-dir` bzw. `DEMOGRAFIE_DATA_DIR` gesetzt wird; Standard ist das aktuelle Arbeitsverzeichnis (`./data`, `./runs`).
