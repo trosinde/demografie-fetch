@@ -59,3 +59,24 @@ Nicht prüfbar, weil der Download-Link fehlt. Keine Anfrage gestellt.
 2. **Tableau-URL der ROP 2045** (`https://tableau.bbsr.bund.de/views/...`) eintragen. Getestet wird nur die eingetragene URL.
 3. **Download-Link Bayern-Prognose** eintragen.
 4. **Regionaldatenbank robots.txt `Disallow: /`**: Freigabe, dass der Adapter ausschliesslich die REST-API mit Token nutzt.
+
+## Nachtrag 2026-10-24: Zugang ohne API-Key (Web-Frontend)
+
+Ein API-Key ist nicht zu bekommen, und der dokumentierte Gastzugang (`GAST`/`GAST`) liefert bei beiden Datenbanken 401. Deshalb habe ich geprüft, was die öffentliche Webseite ohne Anmeldung lädt.
+
+**GENESIS Destatis:** Das Frontend `genesis.destatis.de/datenbank/online` lädt die Tabellen ohne Anmeldung über eine interne REST-Schnittstelle. Es gibt keine robots.txt, keinen Login und keinen Zustimmungsdialog. Die Abrufe kamen vom lokalen Rechner, ohne besondere Header:
+
+| Endpunkt (GET, Basis `https://genesis.destatis.de/genesis/api/rest/`) | Inhalt |
+|---|---|
+| `tables/<code>/data` | alle Werte als JSON-stat-artiges Datenwürfel-Objekt (`id`, `size`, `dimension`, `value`, `status`) |
+| `tables/<code>/structure` | Metadaten inkl. `lastChange` (für die Änderungsprüfung; kein ETag) |
+| `tables/<code>/qualitySigns` | Bedeutung der Sonderzeichen |
+| `statistics/<code>/tables` | Tabellen einer Statistik inkl. `locationVariableCodes` (z. B. `KREISE`) |
+
+Befunde:
+- **12421-0004:** 200, 17,8 MB, 2.026.944 Werte (3 Geschlechter × 9 Varianten × 16 Länder × 46 Stichtage 2025–2070 × 102 Altersjahre). Vollständig, nicht auf 900 Zeilen gekürzt wie die Ansicht. Werte in 1000, mit einer Nachkommastelle, also der veröffentlichten Genauigkeit.
+- **12411-0017 (Bevölkerung: Kreise, Stichtag, Altersgruppen; 18 Gruppen):** 2,9 MB, Stichtage 1995–2025. Kreise mit Wert: 402 (2011–2015), 401 (2016–2020), **400 (ab 2021)**. Das passt zu den Gebietsreformen. Dazu gibt es 12411-0015, -0016 und -0018 (mit Geschlecht).
+- **Geburten, Sterbefälle, Wanderungen (12612, 12613, 12711):** Bei Destatis keine Tabelle auf Kreisebene, die gibt es nur in der Regionaldatenbank.
+- **Risiko:** Die Schnittstelle ist intern und nicht dokumentiert, Format und Pfade können sich ohne Ankündigung ändern. Last: Ein Abruf entspricht einem Seitenaufruf, bei monatlichem Lauf vernachlässigbar.
+
+**Regionaldatenbank:** Das Gastkonto ist gesperrt, und robots.txt setzt `Disallow: /`. Die HTML-Seiten habe ich deshalb nicht abgefragt. Ohne Token bleibt dort nur der manuelle Weg (`import`).
