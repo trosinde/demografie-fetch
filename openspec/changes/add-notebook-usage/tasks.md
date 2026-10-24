@@ -13,7 +13,7 @@
 ## 3. Beispiel-Notebook und CI
 
 - [x] 3.1 `notebooks/schnellstart.ipynb`: Installationszelle (Tag `skip-ci`), Abruf 12411-0015 ab 2024, Zusammenfassung, `wide_df.head()`, zweiter Abruf `cache`, `list_source`, `run(config=…)` mit kleiner Beispielkonfiguration und `to_frame()`; lokal mit `nbclient` vollständig ausgeführt
-- [ ] 3.2 Workflow `notebook.yml` (Wheel bauen, frische venv, Notebook ausführen, ausgeführtes Notebook als Artefakt); auf dem Pull Request grün
+- [x] 3.2 Workflow `notebook.yml` (Wheel bauen, frische venv, Notebook ausführen, ausgeführtes Notebook als Artefakt); auf dem Pull Request grün
 
 ## 4. Veröffentlichung und Release
 
