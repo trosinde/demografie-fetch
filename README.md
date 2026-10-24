@@ -185,7 +185,7 @@ sequenceDiagram
     end
 ```
 
-Weitere Diagramme (Ablauf von `run`, Datenfluss) stehen in [`openspec/changes/add-genesis-adapter/design.md`](openspec/changes/add-genesis-adapter/design.md), die Zugangsprüfung in [`openspec/changes/add-access-probe/design.md`](openspec/changes/add-access-probe/design.md).
+Weitere Diagramme (Ablauf von `run`, Datenfluss) stehen in [`openspec/changes/archive/2026-10-24-add-genesis-adapter/design.md`](openspec/changes/archive/2026-10-24-add-genesis-adapter/design.md), die Zugangsprüfung in [`openspec/changes/archive/2026-10-24-add-access-probe/design.md`](openspec/changes/archive/2026-10-24-add-access-probe/design.md).
 
 ## Was kommt heraus?
 
@@ -297,7 +297,7 @@ runs/<UTC>/manifest_demografie.json     Ergebnis je Lauf
 
 ### Entwicklung
 
-Änderungen laufen über [OpenSpec](https://github.com/Fission-AI/OpenSpec): Vorschlag (`/opsx:propose`), Freigabe, Umsetzung (`/opsx:apply`), PR, Archiv. Offene Changes liegen unter `openspec/changes/`.
+Änderungen laufen über [OpenSpec](https://github.com/Fission-AI/OpenSpec): Vorschlag (`/opsx:propose`), Freigabe, Umsetzung (`/opsx:apply`), PR, Archiv. Die gültige Spezifikation steht in [`openspec/specs/`](openspec/specs/), offene Changes unter `openspec/changes/`, abgeschlossene mit Design und Diagrammen unter `openspec/changes/archive/`.
 
 ```bash
 uv run pytest              # ohne Netzwerk
