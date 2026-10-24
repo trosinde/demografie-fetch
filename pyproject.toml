@@ -1,16 +1,32 @@
 [project]
 name = "demografie-fetch"
-version = "0.0.1"
+version = "0.1.0"
 description = "Demografiedaten fuer die Immobilien-Ampel: URL rein, Tabelle je Kreis raus"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Thorsten Rosin" }]
-dependencies = []
+dependencies = [
+    "pandas>=3.1.0",
+    "pyarrow>=26.0.0",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+demografie-fetch = "demografie_fetch.cli:main"
 
 [dependency-groups]
 probe = ["requests>=2.31", "PyYAML>=6.0", "playwright>=1.45"]
-dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "types-requests", "types-PyYAML"]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "types-requests",
+    "types-PyYAML",
+    "pandas-stubs>=3.0.5.260914",
+    "pyarrow-stubs>=20.0.0.20260819",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -26,6 +42,7 @@ default-groups = ["probe", "dev"]
 testpaths = ["tests"]
 markers = ["live: Tests mit echtem Netzwerkzugriff (standardmaessig aus)"]
 addopts = "-m 'not live'"
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

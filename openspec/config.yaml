@@ -38,6 +38,13 @@ context: |
   Anfrage/s, Backoff. Keine Umgehung von Sperren, Logins, CAPTCHAs oder
   Zustimmungsdialogen. Exit-Codes: 0 ok/unveraendert, 1 Teilfehler, 2 Abbruch.
 
+rules:
+  design:
+    - Enthält Mermaid-Diagramme, die GitHub anzeigt - mindestens ein Bausteindiagramm (flowchart) der betroffenen Komponenten und je zentralem Ablauf ein Sequenzdiagramm (sequenceDiagram), inkl. Fehler- und Cache-Pfaden.
+    - Diagramme zeigen den geplanten Stand; Abweichungen in der Umsetzung werden im design.md nachgezogen.
+  tasks:
+    - Enthält eine Aufgabe, die README-Überblick und Diagramme an die Änderung anpasst, wenn sich Nutzung oder Ablauf ändern.
+
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
 # Example:

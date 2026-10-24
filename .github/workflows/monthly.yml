@@ -1,0 +1,53 @@
+name: monthly
+
+# Monatlicher Abruf aller aktiven Quellen. Der Cache (data/) wird zwischen den
+# Laeufen ueber actions/cache weitergegeben, damit unveraenderte Quellen nicht
+# neu geladen werden und Rohfassungen erhalten bleiben.
+on:
+  schedule:
+    - cron: "17 5 3 * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/monthly.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monthly
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --no-group probe --no-group dev
+      - uses: actions/cache/restore@v4
+        with:
+          path: data
+          key: demografie-data-${{ github.run_id }}
+          restore-keys: demografie-data-
+      - name: demografie-fetch run
+        id: run
+        run: |
+          set +e
+          uv run demografie-fetch run --max-age 0 -v
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: data
+          key: demografie-data-${{ github.run_id }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: manifest_demografie
+          path: |
+            runs/*/manifest_demografie.json
+            data/staging/
+      - name: Exit-Code
+        run: exit ${{ steps.run.outputs.code }}
