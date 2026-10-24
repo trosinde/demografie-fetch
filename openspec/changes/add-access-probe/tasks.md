@@ -23,4 +23,5 @@
 
 - Freigabe des Nutzers zu Klasse, Adapter ja/nein und Zeitplan je Quelle einholen.
 - Feld `zugang:` je Quelle in `config/sources_demografie.yaml` eintragen.
+- README-Überblick inkl. Zugangsprüfung: umgesetzt mit `add-genesis-adapter`, Aufgabe 6.4.
 - Change archivieren (`/opsx:archive`).
