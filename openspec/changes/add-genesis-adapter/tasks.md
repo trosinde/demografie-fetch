@@ -33,7 +33,7 @@
 ## 6. Qualität und Betrieb
 
 - [x] 6.1 `ruff check` und `mypy --strict` über `src`, `tests`, `probe` sauber
-- [ ] 6.2 Workflows `ci.yml` (Lint und Tests bei Push) und `monthly.yml` (cron, `demografie-fetch run --max-age 0`, Manifest als Artefakt); `monthly` einmal per `workflow_dispatch` aus CI erfolgreich
+- [x] 6.2 Workflows `ci.yml` (Lint und Tests bei Push) und `monthly.yml` (cron, `demografie-fetch run --max-age 0`, Manifest als Artefakt); `monthly` einmal per `workflow_dispatch` aus CI erfolgreich
 - [x] 6.3 README (Nutzung, Cache, Grenzen, DVC-Stage mit `always_changed: true`), CHANGELOG
 
 ## Workflow follow-up
