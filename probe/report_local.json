@@ -1,0 +1,553 @@
+{
+  "umgebung": "local",
+  "zeit_utc": "2026-10-24T12:38:29Z",
+  "plattform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "python": "3.12.13",
+  "runner": null,
+  "netz": {
+    "country": "DE"
+  },
+  "tokens": {
+    "genesis": false,
+    "regio": false
+  },
+  "quellen": [
+    {
+      "id": "kbv16_laender",
+      "url": "https://genesis.destatis.de/datenbank/online/statistic/12421/table/12421-0004",
+      "art": "genesis",
+      "rolle": "rahmen",
+      "klasse": "nicht_pruefbar",
+      "grund": "kein_token: GENESIS-/Regio-Token fehlt, Datenzugang offen",
+      "tests": {
+        "T3": {
+          "test": "T3",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T4": {
+          "test": "T4",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T5": {
+          "test": "T5",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T8": {
+          "test": "T8",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T1": {
+          "test": "T1",
+          "status": "gescheitert",
+          "http": 404,
+          "dauer_ms": 184,
+          "content_type": "text/html",
+          "weiterleitung": [],
+          "grund": "HTTP 404",
+          "auszug": "<!doctype html>\r\n\r\n<html lang=\"de\">\r\n<head>\r\n  <meta charset=\"utf-8\">\r\n\r\n  <title></title>\r\n  <meta name=\"description\" content=\"\">\r\n  <meta name=\"author\" content=\"\">\r\n\r\n\t<style>\r\n@font-face {\r\n  font-family   : 'Statis Sans';\r\n  src           : url( \"/otherhtm/error/StatisSans-Regular.woff2\" ) forma",
+          "details": {}
+        },
+        "T2": {
+          "test": "T2",
+          "status": "erreichbar",
+          "http": 200,
+          "dauer_ms": 150,
+          "content_type": "text/html",
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": "<!doctype html>\n<html lang=\"de\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, user-scalable=yes\" />\n    <meta name=\"theme-color\" content=\"#000000\" />\n    <meta\n      http-equiv=\"Content-Security-Policy\"\n      content=\"\n      default-src 'none';\n      b",
+          "details": {}
+        },
+        "T6": {
+          "test": "T6",
+          "status": "kein_token",
+          "http": 200,
+          "dauer_ms": 858,
+          "content_type": "application/json;charset=UTF-8",
+          "weiterleitung": [],
+          "grund": "GENESIS_TOKEN nicht gesetzt",
+          "auszug": "{\"Status\":\"Sie wurden erfolgreich an- und abgemeldet! Bei mehr als 3 parallelen Requests wurden länger als 15 Minuten laufende Requests beendet.\",\"Username\":\"GAST\"}",
+          "details": {
+            "basis_url": "https://genesis.destatis.de/genesisWS/rest/2020/"
+          }
+        },
+        "T7": {
+          "test": "T7",
+          "status": "kein_token",
+          "http": 401,
+          "dauer_ms": 816,
+          "content_type": "application/json",
+          "weiterleitung": [],
+          "grund": "GENESIS_TOKEN nicht gesetzt",
+          "auszug": "{\"Code\":15,\"Content\":\"Sie sind nicht berechtigt diesen Service aufzurufen oder der Header Ihres Requests enthält nicht alle notwendigen Angaben, sodass Ihre Zugangsdaten nicht erkannt werden.\",\"Type\":\"ERROR\"}",
+          "details": {
+            "basis_url": "https://genesis.destatis.de/genesisWS/rest/2020/",
+            "genesis_status": {
+              "Code": null,
+              "Type": null,
+              "Content": ""
+            },
+            "selection": "12421-0004",
+            "treffer": [],
+            "anzahl_treffer": 0,
+            "datenbank": "genesis",
+            "tabelle": "12421-0004",
+            "statistik": "12421"
+          }
+        }
+      }
+    },
+    {
+      "id": "bevoelkerung_kreise_alter",
+      "url": "https://www.regionalstatistik.de/genesis/online?sequenz=tabelleErgebnis&selectionname=12411-03-03-4",
+      "art": "genesis",
+      "rolle": "kontext",
+      "klasse": "nicht_pruefbar",
+      "grund": "kein_token: GENESIS-/Regio-Token fehlt, Datenzugang offen",
+      "tests": {
+        "T3": {
+          "test": "T3",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T4": {
+          "test": "T4",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T5": {
+          "test": "T5",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T8": {
+          "test": "T8",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T1": {
+          "test": "T1",
+          "status": "erreichbar",
+          "http": 200,
+          "dauer_ms": 199,
+          "content_type": "text/plain; charset=UTF-8",
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": "# robots.txt zu https://www.regionalstatistik.de/\n\nUser-agent: *\nDisallow: /\n",
+          "details": {}
+        },
+        "T2": {
+          "test": "T2",
+          "status": "erreichbar",
+          "http": 200,
+          "dauer_ms": 8083,
+          "content_type": "text/html;charset=UTF-8",
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": "<!DOCTYPE html><html lang=\"de\">\n<head>\n<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n<meta name=\"robots\" content=\"index,follow,noarchive,noodp\">\n<meta name=\"revisit-after\" content=\"30 Days\">\n<meta name=\"generator\" content=\"GENESIS-Online\">\n<meta name=\"DC.type\" content=\"Text\">\n<",
+          "details": {}
+        },
+        "T6": {
+          "test": "T6",
+          "status": "kein_token",
+          "http": 200,
+          "dauer_ms": 722,
+          "content_type": "application/json;charset=UTF-8",
+          "weiterleitung": [],
+          "grund": "REGIO_TOKEN nicht gesetzt",
+          "auszug": "{\"Status\":\"Sie wurden erfolgreich an- und abgemeldet! Bei mehr als 10 parallelen Requests wurden länger als 15 Minuten laufende Requests beendet.\",\"Username\":\"GAST\"}",
+          "details": {
+            "basis_url": "https://www.regionalstatistik.de/genesisws/rest/2020/"
+          }
+        },
+        "T7": {
+          "test": "T7",
+          "status": "kein_token",
+          "http": 401,
+          "dauer_ms": 720,
+          "content_type": "application/json",
+          "weiterleitung": [],
+          "grund": "REGIO_TOKEN nicht gesetzt",
+          "auszug": "{\"Code\":15,\"Content\":\"Sie sind nicht berechtigt diesen Service aufzurufen oder der Header Ihres Requests enthält nicht alle notwendigen Angaben, sodass Ihre Zugangsdaten nicht erkannt werden.\",\"Type\":\"ERROR\"}",
+          "details": {
+            "basis_url": "https://www.regionalstatistik.de/genesisws/rest/2020/",
+            "genesis_status": {
+              "Code": null,
+              "Type": null,
+              "Content": ""
+            },
+            "selection": "12411-03-03-4",
+            "treffer": [],
+            "anzahl_treffer": 0,
+            "datenbank": "regio",
+            "tabelle": "12411-03-03-4",
+            "statistik": "12411"
+          }
+        }
+      }
+    },
+    {
+      "id": "bewegungen_kreise",
+      "url": "https://www.regionalstatistik.de/link/statistikInfo/12711",
+      "art": "genesis",
+      "rolle": "kontext",
+      "klasse": "nicht_pruefbar",
+      "grund": "kein_token: GENESIS-/Regio-Token fehlt, Datenzugang offen",
+      "tests": {
+        "T3": {
+          "test": "T3",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T4": {
+          "test": "T4",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T5": {
+          "test": "T5",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T8": {
+          "test": "T8",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T1": {
+          "test": "T1",
+          "status": "erreichbar",
+          "http": 200,
+          "dauer_ms": 199,
+          "content_type": "text/plain; charset=UTF-8",
+          "weiterleitung": [],
+          "grund": "wie oben (gleicher Host)",
+          "auszug": null,
+          "details": {}
+        },
+        "T2": {
+          "test": "T2",
+          "status": "erreichbar",
+          "http": 200,
+          "dauer_ms": 1348,
+          "content_type": "text/html;charset=UTF-8",
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": "<!DOCTYPE html><html lang=\"de\">\n<head>\n<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n<meta name=\"robots\" content=\"index,follow,noarchive,noodp\">\n<meta name=\"revisit-after\" content=\"30 Days\">\n<meta name=\"generator\" content=\"GENESIS-Online\">\n<meta name=\"DC.type\" content=\"Text\">\n<",
+          "details": {}
+        },
+        "T6": {
+          "test": "T6",
+          "status": "kein_token",
+          "http": 200,
+          "dauer_ms": 1045,
+          "content_type": "application/json;charset=UTF-8",
+          "weiterleitung": [],
+          "grund": "REGIO_TOKEN nicht gesetzt",
+          "auszug": "{\"Status\":\"Sie wurden erfolgreich an- und abgemeldet! Bei mehr als 10 parallelen Requests wurden länger als 15 Minuten laufende Requests beendet.\",\"Username\":\"GAST\"}",
+          "details": {
+            "basis_url": "https://www.regionalstatistik.de/genesisws/rest/2020/"
+          }
+        },
+        "T7": {
+          "test": "T7",
+          "status": "kein_token",
+          "http": 401,
+          "dauer_ms": 1023,
+          "content_type": "application/json",
+          "weiterleitung": [],
+          "grund": "REGIO_TOKEN nicht gesetzt",
+          "auszug": "{\"Code\":15,\"Content\":\"Sie sind nicht berechtigt diesen Service aufzurufen oder der Header Ihres Requests enthält nicht alle notwendigen Angaben, sodass Ihre Zugangsdaten nicht erkannt werden.\",\"Type\":\"ERROR\"}",
+          "details": {
+            "basis_url": "https://www.regionalstatistik.de/genesisws/rest/2020/",
+            "genesis_status": {
+              "Code": null,
+              "Type": null,
+              "Content": ""
+            },
+            "selection": "12711*",
+            "treffer": [],
+            "anzahl_treffer": 0,
+            "datenbank": "regio",
+            "tabelle": null,
+            "statistik": "12711"
+          }
+        }
+      }
+    },
+    {
+      "id": "bbsr_rop2045",
+      "url": "",
+      "art": "tableau",
+      "rolle": "kontext",
+      "klasse": "nicht_pruefbar",
+      "grund": "URL fehlt in der Konfiguration, bitte nachtragen",
+      "tests": {
+        "T6": {
+          "test": "T6",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T7": {
+          "test": "T7",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T8": {
+          "test": "T8",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T1": {
+          "test": "T1",
+          "status": "gescheitert",
+          "http": 404,
+          "dauer_ms": 160,
+          "content_type": "text/html; charset=utf-8",
+          "weiterleitung": [],
+          "grund": "HTTP 404",
+          "auszug": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><title>Page Not Found</title><style>html {\n  height: 100%;\n  width: 100%;\n}\nbody {\n  position: absolute;\n  width: 100%;\n  margin: 0;\n  top: 20%;\n  font-family: Verdana, Geneva, sans-serif;\n  text-al",
+          "details": {
+            "hinweis": "Host-Test ohne Quell-URL"
+          }
+        },
+        "T2": {
+          "test": "T2",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        },
+        "T3": {
+          "test": "T3",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        },
+        "T4": {
+          "test": "T4",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        },
+        "T5": {
+          "test": "T5",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        }
+      }
+    },
+    {
+      "id": "laenderprognose_bayern",
+      "url": "",
+      "art": "file",
+      "rolle": "validierung",
+      "klasse": "nicht_pruefbar",
+      "grund": "URL fehlt in der Konfiguration, bitte nachtragen",
+      "tests": {
+        "T3": {
+          "test": "T3",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T4": {
+          "test": "T4",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T5": {
+          "test": "T5",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T6": {
+          "test": "T6",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T7": {
+          "test": "T7",
+          "status": "nicht_anwendbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": null,
+          "auszug": null,
+          "details": {}
+        },
+        "T1": {
+          "test": "T1",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        },
+        "T2": {
+          "test": "T2",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        },
+        "T8": {
+          "test": "T8",
+          "status": "nicht_pruefbar",
+          "http": null,
+          "dauer_ms": null,
+          "content_type": null,
+          "weiterleitung": [],
+          "grund": "URL fehlt",
+          "auszug": null,
+          "details": {}
+        }
+      }
+    }
+  ]
+}
