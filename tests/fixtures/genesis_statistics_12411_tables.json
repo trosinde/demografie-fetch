@@ -1,0 +1,119 @@
+[
+ {
+  "statisticCodes": [
+   "12411"
+  ],
+  "locationVariableCodes": [
+   "DINSG"
+  ],
+  "locationVariableNames": [
+   {
+    "de": "Deutschland insgesamt",
+    "en": "Germany",
+    "wiki": false
+   }
+  ],
+  "variableCodes": [
+   "BEVSTD",
+   "STAG"
+  ],
+  "variableNames": [
+   {
+    "de": "Bevölkerungsstand",
+    "en": "Population",
+    "wiki": false
+   },
+   {
+    "de": "Stichtag",
+    "en": "Reference date",
+    "wiki": false
+   }
+  ],
+  "code": "12411-0001",
+  "name": {
+   "de": "Bevölkerung: Deutschland, Stichtag",
+   "en": "Population: Germany, reference date",
+   "wiki": false
+  }
+ },
+ {
+  "statisticCodes": [
+   "12411"
+  ],
+  "locationVariableCodes": [
+   "KREISE"
+  ],
+  "locationVariableNames": [
+   {
+    "de": "Kreise",
+    "en": "Administrative districts",
+    "wiki": false
+   }
+  ],
+  "variableCodes": [
+   "BEVSTD",
+   "STAG"
+  ],
+  "variableNames": [
+   {
+    "de": "Bevölkerungsstand",
+    "en": "Population",
+    "wiki": false
+   },
+   {
+    "de": "Stichtag",
+    "en": "Reference date",
+    "wiki": false
+   }
+  ],
+  "code": "12411-0015",
+  "name": {
+   "de": "Bevölkerung: Kreise, Stichtag",
+   "en": "Population: Administrative districts, reference date",
+   "wiki": false
+  }
+ },
+ {
+  "statisticCodes": [
+   "12411"
+  ],
+  "locationVariableCodes": [
+   "KREISE"
+  ],
+  "locationVariableNames": [
+   {
+    "de": "Kreise",
+    "en": "Administrative districts",
+    "wiki": false
+   }
+  ],
+  "variableCodes": [
+   "BEVSTD",
+   "STAG",
+   "ALTX20"
+  ],
+  "variableNames": [
+   {
+    "de": "Bevölkerungsstand",
+    "en": "Population",
+    "wiki": false
+   },
+   {
+    "de": "Stichtag",
+    "en": "Reference date",
+    "wiki": false
+   },
+   {
+    "de": "Altersgruppen (u3-75m)",
+    "en": "Age groups (under 3 - 75 years and over)",
+    "wiki": false
+   }
+  ],
+  "code": "12411-0017",
+  "name": {
+   "de": "Bevölkerung: Kreise, Stichtag, Altersgruppen",
+   "en": "Population: Administrative districts, reference date,\nage groups",
+   "wiki": false
+  }
+ }
+]

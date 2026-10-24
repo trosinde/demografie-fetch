@@ -42,6 +42,7 @@ default-groups = ["probe", "dev"]
 testpaths = ["tests"]
 markers = ["live: Tests mit echtem Netzwerkzugriff (standardmaessig aus)"]
 addopts = "-m 'not live'"
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

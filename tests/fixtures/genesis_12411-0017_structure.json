@@ -1,0 +1,181 @@
+{
+ "table": {
+  "code": "12411-0017",
+  "label": {
+   "de": "Bevölkerung: Kreise, Stichtag, Altersgruppen",
+   "en": "Population: Administrative districts, reference date,\nage groups",
+   "wiki": false
+  },
+  "lastChange": "2026-09-21T09:08:47.596Z",
+  "copyright": {
+   "de": "© Statistisches Bundesamt (Destatis), 2026",
+   "en": "© Federal Statistical Office, Wiesbaden 2026",
+   "wiki": false
+  },
+  "license": {
+   "de": "Statistisches Bundesamt, Wiesbaden",
+   "en": "Federal Statistical office, Wiesbaden",
+   "wiki": false
+  },
+  "note": {
+   "de": "Ab 2011: Ergebnisse auf Grundlage des Zensus 2011.\nAb 2022: Ergebnisse auf Grundlage des Zensus 2022.",
+   "en": "From 2011: Results based on the 2011 Census.\nFrom 2022: Results based on the 2022 Census.",
+   "wiki": false
+  },
+  "topnote": null,
+  "reloadStructureOnDataChange": true
+ },
+ "statistics": {
+  "12411": {
+   "label": {
+    "de": "Fortschreibung des Bevölkerungsstandes",
+    "en": "Current updating of population figures",
+    "wiki": false
+   },
+   "definitionAvailable": true
+  }
+ },
+ "variables": {
+  "STAG": {
+   "variableType": "TIME_IDENTIFYING_REFERENCE_DAY",
+   "definitionAvailable": false,
+   "label": {
+    "de": "Stichtag",
+    "en": "Reference date",
+    "wiki": false
+   },
+   "breakdownType": "UNDEF",
+   "variableValues": [
+    "2015-12-31",
+    "2024-12-31"
+   ],
+   "selectedValues": [],
+   "summable": false
+  },
+  "KREISE": {
+   "variableType": "REGION_CLASSIFYING",
+   "definitionAvailable": false,
+   "label": {
+    "de": "Kreise",
+    "en": "Administrative districts",
+    "wiki": false
+   },
+   "breakdownType": "OF_WHICH",
+   "variableValues": [
+    "01001",
+    "08111",
+    "03156"
+   ],
+   "selectedValues": [],
+   "summable": false
+  },
+  "ALTX20": {
+   "variableType": "SUBJECT_CLASSIFYING",
+   "definitionAvailable": false,
+   "label": {
+    "de": "Altersgruppen (u3-75m)",
+    "en": "Age groups (under 3 - 75 years and over)",
+    "wiki": false
+   },
+   "breakdownType": "OF_WHICH",
+   "variableValues": [
+    "ALT000B03",
+    "%TOTAL%"
+   ],
+   "selectedValues": [],
+   "summable": false
+  }
+ },
+ "variableValues": {
+  "ALT000B03": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "unter 3 Jahre",
+    "en": "under 3 years",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  },
+  "2015-12-31": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "31.12.2015",
+    "en": "2015-12-31",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  },
+  "%TOTAL%": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "Insgesamt",
+    "en": "Total",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  },
+  "2024-12-31": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "31.12.2024",
+    "en": "2024-12-31",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  },
+  "08111": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "Stuttgart, kreisfreie Stadt",
+    "en": "Stuttgart, kreisfreie Stadt",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  },
+  "01001": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "Flensburg, kreisfreie Stadt",
+    "en": "Flensburg, kreisfreie Stadt",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  },
+  "03156": {
+   "definitionAvailable": false,
+   "label": {
+    "de": "Osterode am Harz, Landkreis (bis 31.10.2016)",
+    "en": "Osterode am Harz, Landkreis (until 2016-10-31)",
+    "wiki": false
+   },
+   "classKey": null,
+   "compoundKey": null
+  }
+ },
+ "contents": {
+  "BEVSTD": {
+   "label": {
+    "de": "Bevölkerungsstand",
+    "en": "Population",
+    "wiki": false
+   },
+   "functions": {
+    "QMU": {
+     "label": {
+      "de": "Anzahl",
+      "en": "number",
+      "wiki": false
+     },
+     "definitionAvailable": false
+    }
+   },
+   "definitionAvailable": true
+  }
+ }
+}
