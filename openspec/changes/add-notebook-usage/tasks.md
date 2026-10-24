@@ -2,17 +2,17 @@
 
 ## 1. Paketdaten
 
-- [ ] 1.1 `src/demografie_fetch/data/referenz_kreise.csv` und `sources_demografie.yaml` anlegen; Suchreihenfolge (Parameter, `./config`, Paket) für Referenzliste und Konfiguration über `importlib.resources`; Herkunft im Manifest; Tests: ohne `config/` im Arbeitsverzeichnis wird die Paketfassung genutzt, mit `config/` die Projektfassung
-- [ ] 1.2 Test am gebauten Wheel: `uv build`, Wheel enthält `demografie_fetch/data/*`; Test: Projekt- und Paketfassung der Referenzliste sind identisch
+- [x] 1.1 `src/demografie_fetch/data/referenz_kreise.csv` und `sources_demografie.yaml` anlegen; Suchreihenfolge (Parameter, `./config`, Paket) für Referenzliste und Konfiguration über `importlib.resources`; Herkunft im Manifest; Tests: ohne `config/` im Arbeitsverzeichnis wird die Paketfassung genutzt, mit `config/` die Projektfassung
+- [x] 1.2 Test am gebauten Wheel: `uv build`, Wheel enthält `demografie_fetch/data/*`; Test: Projekt- und Paketfassung der Referenzliste sind identisch
 
 ## 2. API für Notebooks
 
-- [ ] 2.1 `RunResult` (NamedTuple mit `to_frame()`), `list_source` exportieren, CLI unverändert lauffähig; Tests für Entpacken als Tupel und `to_frame()`
-- [ ] 2.2 `FetchResult.__repr__` und `_repr_html_` (Quelle, Status, Tabelle, Titel, Stand, Zeilen, Vollständigkeit, Pfade); Test, dass die Ausgabe keine Datenzeilen enthält
+- [x] 2.1 `RunResult` (NamedTuple mit `to_frame()`), `list_source` exportieren, CLI unverändert lauffähig; Tests für Entpacken als Tupel und `to_frame()`
+- [x] 2.2 `FetchResult.__repr__` und `_repr_html_` (Quelle, Status, Tabelle, Titel, Stand, Zeilen, Vollständigkeit, Pfade); Test, dass die Ausgabe keine Datenzeilen enthält
 
 ## 3. Beispiel-Notebook und CI
 
-- [ ] 3.1 `notebooks/schnellstart.ipynb`: Installationszelle (Tag `skip-ci`), Abruf 12411-0015 ab 2024, Zusammenfassung, `wide_df.head()`, zweiter Abruf `cache`, `list_source`, `run(config=…)` mit kleiner Beispielkonfiguration und `to_frame()`; lokal mit `nbclient` vollständig ausgeführt
+- [x] 3.1 `notebooks/schnellstart.ipynb`: Installationszelle (Tag `skip-ci`), Abruf 12411-0015 ab 2024, Zusammenfassung, `wide_df.head()`, zweiter Abruf `cache`, `list_source`, `run(config=…)` mit kleiner Beispielkonfiguration und `to_frame()`; lokal mit `nbclient` vollständig ausgeführt
 - [ ] 3.2 Workflow `notebook.yml` (Wheel bauen, frische venv, Notebook ausführen, ausgeführtes Notebook als Artefakt); auf dem Pull Request grün
 
 ## 4. Veröffentlichung und Release
@@ -23,8 +23,8 @@
 
 ## 5. Doku
 
-- [ ] 5.1 README: Abschnitt „Im Jupyter-Notebook“ (Installation mit Tag, Python ≥ 3.11, `%pip` statt `!pip`, Beispielzellen, `data_dir`, Logging), Verweis auf das Beispiel-Notebook, Bausteindiagramm und Sequenzdiagramm aus design.md
-- [ ] 5.2 design.md mit der Umsetzung abgleichen
+- [x] 5.1 README: Abschnitt „Im Jupyter-Notebook“ (Installation mit Tag, Python ≥ 3.11, `%pip` statt `!pip`, Beispielzellen, `data_dir`, Logging), Verweis auf das Beispiel-Notebook, Bausteindiagramm und Sequenzdiagramm aus design.md
+- [x] 5.2 design.md mit der Umsetzung abgleichen
 
 ## Workflow follow-up
 

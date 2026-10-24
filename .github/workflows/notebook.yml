@@ -1,0 +1,40 @@
+name: notebook
+
+# Fuehrt notebooks/schnellstart.ipynb in einer frischen Umgebung mit dem aus dem
+# Repo gebauten Paket aus (ohne die Installationszelle, Tag skip-ci).
+on:
+  pull_request:
+    paths: ["src/**", "notebooks/**", "scripts/run_notebook.py", "pyproject.toml",
+            ".github/workflows/notebook.yml"]
+  push:
+    branches: [main]
+    paths: ["src/**", "notebooks/**", "scripts/run_notebook.py", "pyproject.toml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notebook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Wheel bauen
+        run: uv build --wheel -o dist
+      - name: Frische Umgebung
+        run: |
+          uv venv -p 3.12 /tmp/nbenv
+          VIRTUAL_ENV=/tmp/nbenv uv pip install dist/*.whl ipykernel nbclient nbformat
+      - name: Notebook ausfuehren (ausserhalb des Repos)
+        run: |
+          mkdir -p /tmp/nbrun
+          cp notebooks/schnellstart.ipynb scripts/run_notebook.py /tmp/nbrun/
+          cd /tmp/nbrun
+          /tmp/nbenv/bin/python -I run_notebook.py schnellstart.ipynb ausgefuehrt.ipynb
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: schnellstart-ausgefuehrt
+          path: /tmp/nbrun/ausgefuehrt.ipynb

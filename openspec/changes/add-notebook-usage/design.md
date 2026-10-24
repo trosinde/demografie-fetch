@@ -112,11 +112,12 @@ sequenceDiagram
 ## Decisions
 
 - **Paketdaten unter `src/demografie_fetch/data/`**, gelesen mit `importlib.resources.files`. Hatchling nimmt Nicht-Python-Dateien im Paketordner automatisch ins Wheel auf; ein Test prüft das am gebauten Wheel. `config/referenz_kreise.csv` bleibt im Repo als Projektdatei; ein Test stellt sicher, dass beide Fassungen identisch sind. Alternative „nur im Paket“ verworfen: Dann ließe sich die Liste im Projekt nicht übersteuern.
-- **Suchreihenfolge** für Konfiguration und Referenzliste: expliziter Parameter, dann `./config/…`, dann Paket. Die Herkunft steht im Manifest (`konfiguration: projekt|paket|<pfad>`).
+- **`.gitignore` angepasst.** Die Regel `data/` schloss auch `src/demografie_fetch/data/` aus; Git und Hatchling hätten die Paketdaten ignoriert. Die Regeln lauten jetzt `/data/` und `/runs/` (nur Projektwurzel), dazu `notebooks/nb-daten/`.
+- **Suchreihenfolge** für Konfiguration und Referenzliste: expliziter Parameter, dann `./config/…`, dann Paket. Die Herkunft steht im Manifest (`konfiguration: projekt|paket|<pfad>`) bzw. bei der Vollständigkeit als `referenz_herkunft`.
 - **Installation per Git-Tag** statt Branch, damit ein Notebook reproduzierbar dieselbe Version nutzt. `%pip` (nicht `!pip`) installiert in die Umgebung des laufenden Kernels.
 - **`RunResult` als `NamedTuple`** mit zusätzlicher Methode `to_frame()`. Bestehender Code mit `code, path, entries = run(...)` funktioniert weiter.
 - **`FetchResult._repr_html_`** und `__repr__` geben eine kompakte Tabelle aus. Die Datenrahmen bleiben über `long_df` und `wide_df` erreichbar.
-- **CI-Workflow `notebook.yml`** für Pull Requests und Pushes auf `main`, die `src/`, `notebooks/` oder `pyproject.toml` ändern. Er baut das Wheel, installiert es mit `ipykernel` und `nbclient` in eine frische venv und führt das Notebook aus. Die Installationszelle trägt den Tag `skip-ci` und wird übersprungen, weil das Wheel des aktuellen Stands getestet werden soll und nicht der letzte Tag. Abgerufen wird nur eine kleine Tabelle (12411-0015 ab 2024, rund 200 kB).
+- **CI-Workflow `notebook.yml`** für Pull Requests und Pushes auf `main`, die `src/`, `notebooks/` oder `pyproject.toml` ändern. Er baut das Wheel, installiert es mit `ipykernel` und `nbclient` in eine frische venv und führt das Notebook aus. Die Installationszelle trägt den Tag `skip-ci`; `scripts/run_notebook.py` entfernt solche Zellen vor der Ausführung mit `nbclient`. Sie wird übersprungen, weil das Wheel des aktuellen Stands getestet werden soll und nicht der letzte Tag. Abgerufen wird nur eine kleine Tabelle (12411-0015 ab 2024, rund 200 kB).
 - **Veröffentlichung des Repos (Entscheidungspunkt).** Die Prüfung vom 24.10.2026 ergab:
   - Die Commit-Historie nennt die private Mailadresse als Autor.
   - `docs/zugangsbericht.md` und `probe/report_local.json` nennen Anbieter und Region des Privatanschlusses.

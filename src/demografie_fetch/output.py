@@ -8,8 +8,9 @@ from typing import Any
 
 import pandas as pd
 
+from .config import package_file
+
 REFERENZ_KREISE = Path("config") / "referenz_kreise.csv"
-_REPO_REFERENZ = Path(__file__).resolve().parents[2] / "config" / "referenz_kreise.csv"
 SONDERZEICHEN = ("...", "…", ".", "-", "/", "x")
 QUALITAET_RE = re.compile(r"^(?P<num>.*?)\s*(?P<q>[prse])$")
 
@@ -92,25 +93,37 @@ def to_wide(df: pd.DataFrame, wide: list[str] | None = None) -> pd.DataFrame | N
     return wide_df.reset_index()
 
 
+def reference_source(path: Path | None = None) -> tuple[Any, str]:
+    """Referenzliste: Parameter, sonst ./config/, sonst Paket. Liefert (Datei, Herkunft)."""
+    if path is not None:
+        return path, str(path)
+    if REFERENZ_KREISE.exists():
+        return REFERENZ_KREISE, "projekt"
+    return package_file("referenz_kreise.csv"), "paket"
+
+
 def load_reference(path: Path | None = None) -> pd.DataFrame:
-    if path is None:
-        path = REFERENZ_KREISE if REFERENZ_KREISE.exists() else _REPO_REFERENZ
-    return pd.read_csv(path, comment="#", dtype=str)
+    source, _ = reference_source(path)
+    with source.open("r", encoding="utf-8") as f:
+        return pd.read_csv(f, comment="#", dtype=str)
 
 
 def completeness(df: pd.DataFrame, ref: pd.DataFrame | None = None) -> dict[str, Any] | None:
     """Kreise mit Wert je Zeitpunkt gegen die Referenzliste."""
     if "ags5" not in df.columns:
         return None
+    herkunft = "uebergeben"
     if ref is None:
         try:
             ref = load_reference()
+            herkunft = reference_source()[1]
         except FileNotFoundError:
             return {"fehler": "Referenzliste config/referenz_kreise.csv fehlt"}
     soll = set(ref["ags5"])
     has = df.loc[df["wert"].notna(), ["zeit", "ags5"]] if "zeit" in df else df.loc[
         df["wert"].notna(), ["ags5"]].assign(zeit="-")
-    out: dict[str, Any] = {"referenz": len(soll), "zeitpunkte": {}}
+    out: dict[str, Any] = {"referenz": len(soll), "referenz_herkunft": herkunft,
+                           "zeitpunkte": {}}
     abweichend = 0
     for zeit, grp in has.groupby("zeit", observed=True):
         ist = set(grp["ags5"].astype(str))
